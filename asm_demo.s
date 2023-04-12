@@ -1,13 +1,26 @@
-;---------- Includes ----------
-              INCDIR      "include"
-              INCLUDE     "hw.i"
-              INCLUDE     "funcdef.i"
-              INCLUDE     "exec/exec_lib.i"
-              INCLUDE     "graphics/graphics_lib.i"
-              INCLUDE     "hardware/cia.i"
-;---------- Consts ----------
+    SECTION demo,CODE_C
 
-CIAA            = $00bfe001
+    INCDIR      "include"
+    INCLUDE     "hardware/custom.i"
+    INCLUDE     "hardware/cia.i"
+    INCLudE     "hw.i"
 
- rts
- 
+CIAA = $00bfe001
+
+mainloop:
+    move.b #$ac,d0
+waitras1:
+    cmp.b      #$ac,CUSTOM+VHPOSR
+    bne        waitras1
+    move.w     #$fff,CUSTOM+COLOR00
+
+waitras2:
+    cmp.b      #$ac,CUSTOM+VHPOSR
+    beq        waitras2
+    move.w     #$000,CUSTOM+COLOR00
+
+.checkmouse:
+    btst       #CIAB_GAMEPORT0,CIAA
+    bne.b      mainloop
+    
+    rts
